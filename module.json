@@ -33,6 +33,20 @@
         "path": "packs/tables.db",
         "entity": "RollTable",
         "module": "mmm"
+    },
+    {
+        "name": "mmmmi",
+        "label": "Maxwell's Manual of Malicious Maladies Items",
+        "path": "packs/items.db",
+        "entity": "Item",
+        "module": "mmm"
+    },
+    {
+        "name": "mmmmj",
+        "label": "Maxwell's Manual of Malicious Maladies",
+        "path": "packs/journals.db",
+        "entity": "JournalEntry",
+        "module": "mmm"
     }
 ],
   "minimumCoreVersion": "0.8.6",

@@ -20,7 +20,6 @@ class MaxwelMaliciousMaladies {
       if(result.toLowerCase().includes(tab.toLowerCase())){
         const result = await MaxwelMaliciousMaladies.rollTable(tab);
         const text = result.results[0].text
-        debugger
         MaxwelMaliciousMaladies.insertSubtableResult(text,chatMessage)
         return;
       }
