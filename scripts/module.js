@@ -1,5 +1,11 @@
-Hooks.on("minor-qol.RollComplete", async (workflow) => {
-  await MaxwelMaliciousMaladies.sleep(6000);
+Hooks.on("midi-qol.RollComplete", async (workflow) => {
+  let timeout = 0;
+  while(!workflow.damageList && timeout < 100) {
+    await MaxwelMaliciousMaladies.sleep(500);
+    timeout++;
+  }
+  console.log(timeout);
+  if(!workflow.damageList) return;
   const applyOnCritSave = game.settings.get("mmm", "applyOnCritSave");
   const applyOnCrit = game.settings.get("mmm", "applyOnCrit");
   const applyOnDamage = game.settings.get("mmm", "applyOnDamage");

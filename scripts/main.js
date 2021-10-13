@@ -82,12 +82,14 @@ class MaxwelMaliciousMaladies {
     const damage = tablename.charAt(0).toUpperCase() + tablename.slice(1);
     new Dialog({
       title: "Maxwell's Manual of Malicious Maladies",
-      content: `<p>${actor.data.name} sustained a lingering injury. Reason: <strong>${reason}</strong>. Roll on the <strong>${damage} Damage</strong> table?</p>`,
+      content: `<p>${actor.data.name} sustained a lingering injury.<br>Reason: <strong>${reason}</strong>.<br>Roll on the <strong>${damage} Damage</strong> table?</p>`,
       buttons: {
        one: {
         icon: '<i class="fas fa-dice-d20"></i>',
         label: "Roll Injury",
         callback: (html) => {
+          const token = actor.getActiveTokens()
+          token[0]?.control()
           MaxwelMaliciousMaladies.rollTable(tablename,actor);
         }
        },
@@ -104,8 +106,21 @@ class MaxwelMaliciousMaladies {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
+  static isOwnerConnected(actor){
+    for(let [userId,permission] of Object.entries(actor.data.permission)){
+      if(permission !== 3) continue;
+      const user = game.users.get(userId);
+      if(!user.isGM && user.active) return true;
+    }
+    return false;
+  }
+
   static requestRoll(reason, tablename, actorId){
-    if(game.user.isGM) return;
+    if(game.user.isGM){
+      const actor = game.actors.get(actorId);
+      if(!MaxwelMaliciousMaladies.isOwnerConnected(actor)) MaxwelMaliciousMaladies.confirmInjury(reason, tablename, actor);
+      return;
+    }
     const actor = game.actors.get(actorId);
     if(actor.isOwner) MaxwelMaliciousMaladies.confirmInjury(reason, tablename, actor);
   }
