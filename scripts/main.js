@@ -59,15 +59,17 @@ class MaxwelMaliciousMaladies {
   }
 
   static async confirmInjury(reason, tablename, actor){
+    //set first letter to upper case
+    const damage = tablename.charAt(0).toUpperCase() + tablename.slice(1);
     new Dialog({
       title: "Maxwell's Manual of Malicious Maladies",
-      content: `<p>You sustained a lingering injury because <strong>${reason}</strong>. Roll on the ${tablename} table?</p>`,
+      content: `<p>${actor.data.name} sustained a lingering injury. Reason: <strong>${reason}</strong>. Roll on the <strong>${damage} Damage</strong> table?</p>`,
       buttons: {
        one: {
         icon: '<i class="fas fa-dice-d20"></i>',
         label: "Roll Injury",
         callback: (html) => {
-          MaxwelMaliciousMaladies.rollTable(tablename);
+          MaxwelMaliciousMaladies.rollTable(tablename,actor);
         }
        },
        two: {
@@ -77,5 +79,9 @@ class MaxwelMaliciousMaladies {
        }
       },
      }).render(true);
+  }
+
+  static sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
