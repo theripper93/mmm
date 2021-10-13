@@ -5,18 +5,37 @@ class MaxwelMaliciousMaladies {
     name = name.charAt(0).toUpperCase() + name.slice(1);
     const table = game.tables.getName(name) ?? await this.getTableFromPack(name);
     if(!table) return await this.displayDialog();
+    let chatMessage
+    Hooks.once("createChatMessage", (message) =>{
+      chatMessage = message;
+    })
     const result = await table.draw()
-    this.rollSubtable(result.results[0].text);
+    this.rollSubtable(result.results[0].text, chatMessage);
+    return result
   }
 
-  static rollSubtable(result){
-    const subTables = ["Scar Chart", "Small Appendage", "Large Limb"];
+  static async rollSubtable(result, chatMessage){
+    const subTables = ["Scar Chart", "Small Appendage Table", "Large Limb Table"];
     for(let tab of subTables){
       if(result.toLowerCase().includes(tab.toLowerCase())){
-        MaxwelMaliciousMaladies.rollTable(tab);
+        const result = await MaxwelMaliciousMaladies.rollTable(tab);
+        const text = result.results[0].text
+        debugger
+        MaxwelMaliciousMaladies.insertSubtableResult(text,chatMessage)
         return;
       }
     }
+  }
+
+  static async insertSubtableResult(text, chatMessage){
+    const content = $(chatMessage.data.content)
+    const result = content.find(".result-text")
+    //find replace the text in the first stron tag
+    const oldTitle = result.find("strong").first().text()
+    const newContent = chatMessage.data.content.replace(oldTitle, oldTitle + "(" + text + ")")
+    chatMessage.update({
+      content: newContent
+    })
   }
 
 
@@ -83,5 +102,11 @@ class MaxwelMaliciousMaladies {
 
   static sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  static requestRoll(reason, tablename, actorId){
+    if(game.user.isGM) return;
+    const actor = game.actors.get(actorId);
+    if(actor.isOwner) MaxwelMaliciousMaladies.confirmInjury(reason, tablename, actor);
   }
 }

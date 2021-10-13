@@ -1,13 +1,12 @@
 Hooks.on("minor-qol.RollComplete", async (workflow) => {
-  await MaxwelMaliciousMaladies.sleep(3000);
+  await MaxwelMaliciousMaladies.sleep(6000);
   const applyOnCritSave = true;
   const applyOnCrit = true;
   const applyOnDamage = true;
   const applyOnDown = true;
-
   for (let target of workflow.damageList) {
     const actor = game.actors.get(target.actorId);
-    if(!actor.isOwner || game.user.isGM) continue;
+    if(!actor.hasPlayerOwner) continue;
     const hpMax = actor.data.data.attributes.hp.max;
     const damageTaken = target.hpDamage;
     const isHalfOrMore = damageTaken >= hpMax / 2;
@@ -17,27 +16,27 @@ Hooks.on("minor-qol.RollComplete", async (workflow) => {
     const isCrit = workflow.isCritical;
     const isDead = target.newHP <= 0;
     if (isHalfOrMore && applyOnDamage) {
-      MaxwelMaliciousMaladies.confirmInjury(
+      MaxwelMaliciousMaladiesSocket.executeForEveryone("requestRoll",
         "Damage exeded half of maximum hp",
         damageType,
-        actor
+        actor.id
       );
       continue;
     }
     if (isCritSave && applyOnCritSave) {
-      MaxwelMaliciousMaladies.confirmInjury(
+      MaxwelMaliciousMaladiesSocket.executeForEveryone("requestRoll",
         "Fumbled saving throw",
         damageType,
-        actor
+        actor.id
       );
       continue;
     }
     if (isCrit && applyOnCrit) {
-      MaxwelMaliciousMaladies.confirmInjury("Critical hit", damageType, actor);
+      MaxwelMaliciousMaladiesSocket.executeForEveryone("requestRoll","Critical hit", damageType, actor.id);
       continue;
     }
     if (isDead && applyOnDown) {
-      MaxwelMaliciousMaladies.confirmInjury("Downed", damageType, actor);
+      MaxwelMaliciousMaladiesSocket.executeForEveryone("requestRoll","Downed", damageType, actor.id);
       continue;
     }
   }

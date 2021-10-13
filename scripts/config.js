@@ -1,4 +1,43 @@
-Hooks.once('init', async function() {
+Hooks.once('init', function() {
+  const applyOnCritSave = true;
+  const applyOnCrit = true;
+  const applyOnDamage = true;
+  const applyOnDown = true;
+  game.settings.register("mmm", "applyOnCritSave", {
+    name: "On fumbled Saving Throw",
+    hint: "Prompt for a lingering injury roll on a fumbled saving throw.",
+    scope: "world",
+    config: true,
+    type: Boolean,
+    default: true,
+  });
+
+  game.settings.register("mmm", "applyOnCrit", {
+    name: "On Critical",
+    hint: "Prompt for a lingering injury roll on a critical hit.",
+    scope: "world",
+    config: true,
+    type: Boolean,
+    default: true,
+  });
+
+  game.settings.register("mmm", "applyOnDamage", {
+    name: "On Damage",
+    hint: "Prompt for a lingering injury roll when the damage recived is more than half of the max hp.",
+    scope: "world",
+    config: true,
+    type: Boolean,
+    default: true,
+  });
+
+  game.settings.register("mmm", "applyOnDown", {
+    name: "On Unconscious",
+    hint: "Prompt for a lingering injury roll when damage brings an actor to 0 hp.",
+    scope: "world",
+    config: true,
+    type: Boolean,
+    default: true,
+  });
 
 });
 
@@ -21,12 +60,17 @@ Hooks.on("chatMessage", (ChatLog, content) => {
 
 Hooks.on("renderChatMessage", (message, html)=>{
     if(!game.user.isGM || !message?.data?.flavor?.includes("[MMMM]")) return;
-    const button = $(`<a title="Apply Lingering Injury" styles="margin-right: 0.3rem;" class="button"><i class="fas fa-viruses"></i></a>`)
-    html.find(".message-delete").before(button);
+    const subTables = ["Scar Chart", "Small Appendage Table", "Large Limb Table"];
+    for(let t of subTables){
+      if(message?.data?.flavor?.includes(t)) return;
+    }
+    const button = $(`<a title="Apply Lingering Injury" style="margin-right: 0.3rem;color: red;" class="button"><i class="fas fa-viruses"></i></a>`)
+    //html.find(".message-delete").before(button);
+    html.find(".result-text").prepend(button)
     button.on("click", (e)=>{
         e.preventDefault();
-        const actor = _token?.actor;
-        if(!actor) return ui.notifications.error("No token selected!");
+        const actor = game.actors.get(message.data?.speaker?.actor) ?? _token?.actor;
+        if(!actor) return ui.notifications.error("No token selected or actor found!");
         const content = $(message.data.content)
         const imgsrc = content.find("img").attr("src");
         const description = content.find(".result-text").html();
@@ -40,4 +84,11 @@ Hooks.on("renderChatMessage", (message, html)=>{
         actor.createEmbeddedDocuments("Item", [itemData]);
         ui.notifications.notify(`Added ${title} to ${actor.data.name}`)
     });
+});
+
+let MaxwelMaliciousMaladiesSocket;
+
+Hooks.once("socketlib.ready", () => {
+  MaxwelMaliciousMaladiesSocket = socketlib.registerModule("mmm");
+  MaxwelMaliciousMaladiesSocket.register("requestRoll", MaxwelMaliciousMaladies.requestRoll);
 });
