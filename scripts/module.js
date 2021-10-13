@@ -1,9 +1,9 @@
 Hooks.on("minor-qol.RollComplete", async (workflow) => {
   await MaxwelMaliciousMaladies.sleep(6000);
-  const applyOnCritSave = true;
-  const applyOnCrit = true;
-  const applyOnDamage = true;
-  const applyOnDown = true;
+  const applyOnCritSave = game.settings.get("mmm", "applyOnCritSave");
+  const applyOnCrit = game.settings.get("mmm", "applyOnCrit");
+  const applyOnDamage = game.settings.get("mmm", "applyOnDamage");
+  const applyOnDown = game.settings.get("mmm", "applyOnDown");
   for (let target of workflow.damageList) {
     const actor = game.actors.get(target.actorId);
     if(!actor.hasPlayerOwner) continue;

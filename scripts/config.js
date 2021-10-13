@@ -1,8 +1,4 @@
 Hooks.once('init', function() {
-  const applyOnCritSave = true;
-  const applyOnCrit = true;
-  const applyOnDamage = true;
-  const applyOnDown = true;
   game.settings.register("mmm", "applyOnCritSave", {
     name: "On fumbled Saving Throw",
     hint: "Prompt for a lingering injury roll on a fumbled saving throw.",
