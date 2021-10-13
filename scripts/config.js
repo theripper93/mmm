@@ -9,7 +9,12 @@ Hooks.once('ready', async function() {
 Hooks.on("chatMessage", (ChatLog, content) => {
     if (content.toLowerCase().startsWith("/mmmm")) {
       const data = content.replace("/mmmm", "").trim();
-      MaxwelMaliciousMaladies.rollTable(data);
+      if(data){
+        MaxwelMaliciousMaladies.rollTable(data);
+      }else{
+        MaxwelMaliciousMaladies.displayDialog();
+      }
+
       return false;
     }
   });
