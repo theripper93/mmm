@@ -30,7 +30,7 @@ Hooks.on("renderChatMessage", (message, html)=>{
         const content = $(message.data.content)
         const imgsrc = content.find("img").attr("src");
         const description = content.find(".result-text").html();
-        const title = content.find("strong").first().text();
+        const title = "Lingering Injury - " + content.find("strong").first().text();
         const itemData = {
             name: title,
             img: imgsrc,
@@ -38,6 +38,6 @@ Hooks.on("renderChatMessage", (message, html)=>{
             "data.description.value": description,
         }
         actor.createEmbeddedDocuments("Item", [itemData]);
-        ui.notifications.notify(`Added ${title} lingering injury to ${actor.data.name}`)
+        ui.notifications.notify(`Added ${title} to ${actor.data.name}`)
     });
 });

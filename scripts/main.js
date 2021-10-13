@@ -1,5 +1,5 @@
 class MaxwelMaliciousMaladies {
-  static async rollTable(name){
+  static async rollTable(name, actor){
     name = name.trim();
     if(!name.endsWith("[MMMM]")) name = name + " - [MMMM]";
     name = name.charAt(0).toUpperCase() + name.slice(1);
@@ -54,12 +54,11 @@ class MaxwelMaliciousMaladies {
         callback: () => {}
        }
       },
-      default: "two",
      }).render(true);
 
   }
 
-  static async confirmInjury(reason, tablename){
+  static async confirmInjury(reason, tablename, actor){
     new Dialog({
       title: "Maxwell's Manual of Malicious Maladies",
       content: `<p>You sustained a lingering injury because <strong>${reason}</strong>. Roll on the ${tablename} table?</p>`,
@@ -77,7 +76,6 @@ class MaxwelMaliciousMaladies {
         callback: () => {}
        }
       },
-      default: "two",
      }).render(true);
   }
 }
